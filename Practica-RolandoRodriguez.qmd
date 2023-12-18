@@ -208,7 +208,7 @@ ggplot(dfResm, aes(x=Var1, y=Var2, fill=value))+
     # idx<-sample(1:nrow(concrete),nrow(concrete)*0.7)
     # concrete_train.df<-concrete[idx,]
     # concrete_test.df<-concrete[-idx,]
-    # 
+    #  
     # idx<-sample(1:nrow(powerplant),nrow(powerplant)*0.7)
     # powerplant.train<-powerplant[idx,]
     # powerplant.test <-powerplant[-idx,]
