@@ -195,7 +195,7 @@ ggplot(dfResm, aes(x=Var1, y=Var2, fill=value))+
     set.seed(123)
 
     # Crear índices
-    # index <- createDataPartition(df_madrid$Square.Meters, p = 0.7, list = FALSE)
+
     index <- sample(1:nrow(df_madrid),nrow(df_madrid$Square.Meters)*0.7)
 
     # Crear conjuntos de entrenamiento y prueba
