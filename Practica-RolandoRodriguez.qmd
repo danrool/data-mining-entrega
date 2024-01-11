@@ -491,7 +491,7 @@ y nos devuelva los 5 más similares de:
       dist[i]<-sum((pca_apartamento - Apc[i,]) ^2)
     }
 
-    head(df_pca[order(dist),])
+    head(df_pca[order(dist),]) 
     
     
 ```
