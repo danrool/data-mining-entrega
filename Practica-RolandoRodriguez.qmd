@@ -363,9 +363,9 @@ ggplot(dfResm, aes(x=Var1, y=Var2, fill=value))+
 
   paste("Por habitación adicional", metros_habitacion_adicional)
   
-  df_madrid_estimado <- df_madrid_clean 
+  df_madrid_new <- df_madrid_clean 
   
-  df_madrid_estimado$Square.Meters[is.na(df_madrid_estimado$Square.Meters)] <- metros_habitacion_adicional
+  df_madrid_new$Square.Meters[is.na(df_madrid_new$Square.Meters)] <- metros_habitacion_adicional
 
 ```
 
@@ -381,47 +381,110 @@ y nos devuelva los 5 más similares de:
 
 ```{r}
 
-  head(df_madrid_estimado)
+  head(df_madrid_new)
 
-  df_pca <- df_madrid_estimado[, c("Accommodates", "Bathrooms", "Bedrooms", "Beds", "Price", "Guests.Included", "Extra.People", "Review.Scores.Rating", "Latitude", "Longitude", "Square.Meters")]
+  df_madrid_new <- df_madrid_new[, c("Accommodates", "Bathrooms", "Bedrooms", "Beds", "Price", "Guests.Included", "Extra.People", "Review.Scores.Rating", "Latitude", "Longitude", "Square.Meters")]
 
-  df_pca <- na.omit(df_pca)
+  df_madrid_new <- na.omit(df_madrid_new)
+  pca_madrid <- prcomp(df_madrid_new, center = TRUE, scale. = TRUE)
   
-  head(df_pca)
+  id_test=sample(nrow(df_madrid_new),1) 
+  apartamento_test = df_madrid_new[id_test,]
+  pca_apartamento = predict(pca_madrid, apartamento_test)
   
-  pca_madrid <- prcomp(df_pca, center = TRUE, scale. = TRUE)
+  str(pca_madrid)
 
 ```
+```{r}
+
+  varianza = pca_madrid$sdev ^2 / sum(pca_madrid$sdev ^2)
+  
+  plot(cumsum(varianza),main="autovalores")
+  n_componentes = 5
+  pca_var = round(varianza*100, 1)
+  barplot(pca_var)
+  
+  
+  paste("La suma de varianza de los 5 primeras componentes, es: " ,round(sum(varianza[1:n_componentes]*100), 1))
+
+```
+
 
 
 ```{r}
 
-  plot(pca_madrid $sdev ^2 / sum(pca_madrid $sdev ^2), main="Importancia de componentes")
+
+  library("FactoMineR")
+  res.pca <- PCA(df_madrid_new)
+  head(res.pca$eig)
+
 
 ```
+```{r}
+
+  pca_madrid$rotation[rownames(pca_madrid$rotation) %in% c('Accommodates'
+                                 ,'Bathrooms'
+                                 ,'Bedrooms'
+                                 ,'Beds'
+                                 ,'Price'
+                                 ,'Guests.Included'
+                                 ,'Extra.People'
+                                 ,'Review.Scores.Rating'
+                                 ,'Latitude'
+                                 ,'Longitude'
+                                 ,'Square.Meters'),1:5]
+  
+  
 
 
+```
+```{r}
+
+
+    componentes <- 5
+  
+    apartamento_parecidos <- function(pred_madrid, df_apartamento){
+    
+    
+      pca_apartamento = predict(pred_madrid, df_apartamento)
+      
+      # Tomo los componentes mas significativos
+      pca_df = pca_madrid$x[,1:componentes]
+      pca_apartamento = pca_apartamento[,1:componentes]
+  
+    
+      df_madrid_new[id_test,]
+      Apc<-pca_madrid$x[,1:componentes]
+      dist<-rep(NA, nrow(Apc))
+      for (i in 1 : nrow(Apc)){
+        dist[i]<-sum((pca_apartamento - Apc[i,]) ^2)
+      }
+
+      head(df_madrid_new[order(dist),])
+    }
+    
+    apartamento_parecidos(pca_madrid, apartamento_test)
+
+```
 
 
 ```{r}
 
     id_test=sample(nrow(df_pca),1) 
-
     apartamento_test = df_pca[id_test,]
-    
     pca_apartamento = predict(pca_madrid, apartamento_test)
     
     
-    # Tomo los 4 componentes mas significativos
+    # Tomo los 3 componentes mas significativos
     
-    pca_df = pca_madrid$x[,1:4]
-    pca_apartamento = pca_apartamento[,1:4]
+    pca_df = pca_madrid$x[,1:3]
+    pca_apartamento = pca_apartamento[,1:3]
   
     
     df_pca[id_test,]
 
 
-    Apc<-pca_madrid$x[,1:4]
+    Apc<-pca_madrid$x[,1:3]
     
     dist<-rep(NA, nrow(Apc))
     for (i in 1 : nrow(Apc)){
